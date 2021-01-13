@@ -10,6 +10,8 @@ This project has the following requirements:
 
 ## Warnings
 
+IMPORTANT: Make sure to avoid exposing these files to the Internet.
+
 The `config.ini` file contains sensible data (after the setup is completed), e.g. the username for connecting to and controlling the bridge. These information are / this file is accessible from your local network or more depending on your configuration. If you do not trust devices in your local network do not use this project or limit the access to the `config.ini` with e.g. 
 
 ```
