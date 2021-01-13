@@ -1,34 +1,39 @@
 <?php
   class Config {
-    public function isInitialized() {
-      $output = parse_ini_file("config.ini", true);
-      if ($output === false) {
+    public $output = false;
+
+    function __construct() {
+      $this->initialize();
+    }
+
+    private function initialize() {
+      $this->output = parse_ini_file("config.ini", true);
+      if ($this->output === false) {
         die("Missing config.ini!");
       }
-      if ($output["bridge"]["address"] === "unknown") {
+    }
+
+    public function isInitialized() {
+      if ($this->output["bridge"]["address"] === "unknown") {
         return false;
       }
-      if ($output["bridge"]["devicename"] === "unknown") {
+      if ($this->output["bridge"]["devicename"] === "unknown") {
         return false;
       }
-      if ($output["bridge"]["username"] === "unknown") {
+      if ($this->output["bridge"]["username"] === "unknown") {
         return false;
       }
       return true;
     }
 
-    function missing() {
-      $output = parse_ini_file("config.ini", true);
-      if ($output === false) {
-        die("Missing config.ini!");
-      }
-      if ($output["bridge"]["address"] === "unknown") {
+    public function missing() {
+      if ($this->output["bridge"]["address"] === "unknown") {
         return "address";
       }
-      if ($output["bridge"]["devicename"] === "unknown") {
+      if ($this->output["bridge"]["devicename"] === "unknown") {
         return "devicename";
       }
-      if ($output["bridge"]["username"] === "unknown") {
+      if ($this->output["bridge"]["username"] === "unknown") {
         return "username";
       }
       return "";
@@ -38,11 +43,35 @@
       # TODO write reset
     }
 
-    function setIpAddress($ipAddress) {
+    public function getIpAddress() {
+      return $this->output['bridge']['address'];
+    }
+
+    public function setIpAddress($ipAddress) {
       $this->set('bridge', 'address', $ipAddress);
     }
 
-    function set($section, $key, $value) {
+    public function setDeviceName($name) {
+      $this->set('bridge', 'devicename', $name);
+    }
+
+    public function getDeviceType() {
+      return $this->output['bridge']['devicetype'] . $this->output['bridge']['devicename'];
+    }
+
+    public function setUsername($username) {
+      $this->set('bridge', 'username', $username);
+    }
+
+    public function getUrl() {
+      #http://<address>/api/<username>/
+      return "http://"
+        . $this->output['bridge']['address']
+        . "/api/"
+        . $this->output['bridge']['username'];
+    }
+
+    private function set($section, $key, $value) {
       $config_data = parse_ini_file("config.ini", true);
       $config_data[$section][$key] = $value;
       $new_content = '';
@@ -54,7 +83,8 @@
           $new_content .= "[$section]\n$section_content\n";
       }
       file_put_contents("config.ini", $new_content);
-  }
+      $this->output = parse_ini_file("config.ini", true);
+    }
   }
   $config = new Config();
   return $config;

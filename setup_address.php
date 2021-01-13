@@ -1,8 +1,6 @@
 <?php
 $config = include_once "config.php";
 
-$ipAddressPattern = "//i";
-
 function testAddress($ipAddress) {
   $options = array(
       CURLOPT_RETURNTRANSFER => true,   // return web page
@@ -37,10 +35,18 @@ function scanNetwork() {
 
 if(isset($_POST["scan"])) {
   $config->setIpAddress(scanNetwork());
+  header("Location: /setup.php", TRUE, 307);
+  exit;
 }
 
 if(isset($_POST["address"])) {
-  $config->setIpAddress($_POST["address"]);
+  $isHueAddress = testAddress($_POST["address"]);
+  if ($isHueAddress) {
+    $config->setIpAddress($_POST["address"]);
+    header("Location: /setup.php", TRUE, 307);
+    exit;
+  }
+  echo "Wrong address!";
 }
 ?>
 <html>

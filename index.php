@@ -1,11 +1,11 @@
 <html>
 <?php
-/*$config = include_once "config.php";
+$config = include_once "config.php";
 
 if (!$config->isInitialized()) {
   header("Location: /setup.php", TRUE, 307);
   exit;
-}*/
+}
 ?>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,6 +27,31 @@ if (!$config->isInitialized()) {
 
     .off {
       background-color: #ff443d!important;
+    }
+
+    .light-off {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      align-items: center;
+    }
+
+    .light-on {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas: 
+        "one two"
+        "sliders sliders";
+      align-items: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .slider-list {
+      grid-area: sliders;
     }
 
     .slider {
@@ -59,87 +84,22 @@ if (!$config->isInitialized()) {
     }
   </style>
   <script>
-    function updateSlider(brightness) {
+    function updateSlider(key, type, value) {
       var xhr = new XMLHttpRequest();
       xhr.open("POST", '', true);
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-      xhr.send('brightness='+brightness);
+      xhr.send('type='+type+'&value='+value+'&key='+key);
     }
   </script>
 </head>
 <body>
+  <h1>Hue Control Center</h1>
 <?php
+include_once "control.php";
 
-$brightness = 0;
+interpretPost($_POST, $config->getUrl());
+printLightControl($config->getUrl());
 
-function isOn() {
-  global $brightness;
-  $req = curl_init();
-  curl_setopt_array($req, [
-      CURLOPT_URL            => "http://192.168.178.32/api/Ke9p6oevMDBPL1JXZ27ZgccBvtVCka8D2cXHujKU/lights/3",
-      CURLOPT_RETURNTRANSFER => true,
-  ]);
-
-  $string_response = curl_exec($req);
-  $response = json_decode($string_response, true);
-  $brightness = $response["state"]["bri"];
-  if($response["state"]["on"]){
-    return true;
-  }
-  return false;
-}
-
-
-function turnOn($bool) {
-  $req = curl_init();
-  $data = array("on" => $bool);
-  curl_setopt_array($req, [
-      CURLOPT_URL            => "http://192.168.178.32/api/Ke9p6oevMDBPL1JXZ27ZgccBvtVCka8D2cXHujKU/lights/3/state",
-      CURLOPT_CUSTOMREQUEST  => "PUT",
-      CURLOPT_POSTFIELDS     => json_encode($data),
-      CURLOPT_HTTPHEADER     => [ "Content-Type" => "application/json" ],
-      CURLOPT_RETURNTRANSFER => true,
-  ]);
-
-  $response = curl_exec($req);
-}
-
-function setBrightness($bri) {
-  $req = curl_init();
-  $data = array("bri" => $bri);
-  curl_setopt_array($req, [
-      CURLOPT_URL            => "http://192.168.178.32/api/Ke9p6oevMDBPL1JXZ27ZgccBvtVCka8D2cXHujKU/lights/3/state",
-      CURLOPT_CUSTOMREQUEST  => "PUT",
-      CURLOPT_POSTFIELDS     => json_encode($data, JSON_NUMERIC_CHECK),
-      CURLOPT_HTTPHEADER     => [ "Content-Type" => "application/json" ],
-      CURLOPT_RETURNTRANSFER => true,
-  ]);
-
-  $response = curl_exec($req);
-}
-
-if(isset($_POST["turnlights"])) {
-  if($_POST["turnlights"] === "On") {
-    turnOn(true);
-  } else if ($_POST["turnlights"] === "Off") {
-    turnOn(false);
-  }
-}
-if(isset($_POST["brightness"])) {
-  setBrightness($_POST["brightness"]);
-}
-
-if (isOn()) {
-  echo "<form action=\"\" method=\"post\">
-  <input class=\"button off\" type=\"submit\" name=\"turnlights\" value=\"Off\"/>
-  <h2>Brightness slider:</h2>
-  <input class=\"slider\" type=\"range\" min=\"1\" max=\"254\" value=\"$brightness\" onchange=\"updateSlider(this.value)\">
-  </form>";
-} else {
-  echo '<form action="" method="post">
-  <input class="button" type="submit" name="turnlights" value="On"/>
-  </form>';
-}
 ?>
 </body>
 </html>
