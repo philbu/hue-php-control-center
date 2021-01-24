@@ -35,7 +35,7 @@ function scanNetwork() {
 
 if(isset($_POST["scan"])) {
   $config->setIpAddress(scanNetwork());
-  header("Location: /setup.php", TRUE, 307);
+  header("Location: setup.php", TRUE, 307);
   exit;
 }
 
@@ -43,7 +43,7 @@ if(isset($_POST["address"])) {
   $isHueAddress = testAddress($_POST["address"]);
   if ($isHueAddress) {
     $config->setIpAddress($_POST["address"]);
-    header("Location: /setup.php", TRUE, 307);
+    header("Location: setup.php", TRUE, 307);
     exit;
   }
   echo "Wrong address!";
@@ -71,13 +71,13 @@ if(isset($_POST["address"])) {
   </head>
   <body>
     <h1>Enter or find the IP address of the Hue Bridge</h1>
-    <form action="/setup_address.php" method="post">
+    <form action="setup_address.php" method="post">
       <p>Enter the IP address of the bridge:</p>
       <input type="text" name="address"/>
       <input class="button" type="submit" name="submit" value="Submit"/>
     </form>
     <h2>OR</h2>
-    <form action="/setup_address.php" method="post">
+    <form action="setup_address.php" method="post">
       <input class="button" type="submit" name="scan" value="Scan"/>
     </form>
     <p>Scanning may take a while.</p>

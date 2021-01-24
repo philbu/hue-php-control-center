@@ -28,7 +28,7 @@ function getUsername() {
   if (isset($json->success)) {
     if (isset($json->success->username)) {
       $config->setUsername($json->success->username);
-      header("Location: /index.php", TRUE, 307);
+      header("Location: index.php", TRUE, 307);
       exit;
     }
   }

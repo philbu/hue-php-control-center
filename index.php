@@ -3,7 +3,7 @@
 $config = include_once "config.php";
 
 if (!$config->isInitialized()) {
-  header("Location: /setup.php", TRUE, 307);
+  header("Location: setup.php", TRUE, 307);
   exit;
 }
 ?>
